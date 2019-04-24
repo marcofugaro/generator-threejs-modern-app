@@ -21,7 +21,7 @@ or just
 ```bash
 yo
 ```
-and select `Three.js Modern App`.
+and select `Threejs Modern App`.
 
 ## License
 
