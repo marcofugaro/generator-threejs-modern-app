@@ -1,0 +1,47 @@
+{
+  "name": "generator-threejs-modern-app",
+  "version": "1.0.0",
+  "description": "Scaffold out a boilerplate and utils for a fullscreen Three.js app",
+  "license": "MIT",
+  "repository": "marcofugaro/generator-threejs-modern-app",
+  "author": {
+    "name": "Marco Fugaro",
+    "email": "marco.fugaro@gmail.com",
+    "url": "http://marcofugaro.it"
+  },
+  "keywords": [
+    "boilerplate",
+    "template",
+    "scaffold",
+    "generator",
+    "three",
+    "threejs",
+    "three.js",
+    "modern",
+    "app",
+    "yeoman-generator"
+  ],
+  "scripts": {
+    "test": "NODE_ENV=test ava",
+    "prepublishOnly": "npm run test"
+  },
+  "ava": {
+    "failWithoutAssertions": false
+  },
+  "main": "app/index.js",
+  "files": [
+    "app"
+  ],
+  "devDependencies": {
+    "ava": "^1.4.1",
+    "pify": "^4.0.1",
+    "yeoman-assert": "^3.1.1",
+    "yeoman-test": "^2.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "normalize-url": "^4.3.0",
+    "superb": "^3.0.0",
+    "yeoman-generator": "^3.2.0"
+  }
+}
