@@ -36,7 +36,7 @@
     "ava": "^1.4.1",
     "pify": "^4.0.1",
     "yeoman-assert": "^3.1.1",
-    "yeoman-test": "^1.9.1"
+    "yeoman-test": "^2.0.0"
   },
   "dependencies": {
     "lodash": "^4.17.11",
