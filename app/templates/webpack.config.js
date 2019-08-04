@@ -13,9 +13,10 @@ const chalk = require('chalk')
 const indentString = require('indent-string')
 const _ = require('lodash')
 
+const PROTOCOL = 'http'
 const HOST = '0.0.0.0'
 const PORT = 8080
-const urls = prepareUrls('http', HOST, PORT)
+const urls = prepareUrls(PROTOCOL, HOST, PORT)
 
 // make the console >tree command look pretty
 function beautifyTree(tree) {
@@ -82,9 +83,10 @@ module.exports = merge.smart(
   //
   process.env.NODE_ENV === 'development' && {
     mode: 'development',
-    // a good compromise between fast and readable sourcemaps
+    // a good compromise betwee fast and readable sourcemaps
     devtool: 'cheap-module-source-map',
     devServer: {
+      https: PROTOCOL === 'https',
       host: HOST,
       port: PORT,
       public: urls.lanUrlForConfig,
@@ -101,9 +103,9 @@ module.exports = merge.smart(
       // Sssh...
       quiet: true,
       clientLogLevel: 'none',
-      // uncomment these lines to enable HMR
+      // enable HMR
+      // TODO do code to enable HMR from the client-side
       // hot: true,
-      // hotOnly: true,
       after() {
         // try to open into the already existing tab
         openBrowser(urls.localUrlForBrowser)
