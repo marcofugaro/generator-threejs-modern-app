@@ -24,4 +24,4 @@ yo
 and select `Threejs Modern App`.
 
 [travis-image]: https://travis-ci.org/marcofugaro/generator-threejs-modern-app.svg?branch=master
-[travis-url]: https://travis-ci.org/marcofugaro/generator-treejs-modern-app
+[travis-url]: https://travis-ci.org/marcofugaro/generator-threejs-modern-app
