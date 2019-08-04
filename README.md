@@ -1,4 +1,4 @@
-# generator-threejs-modern-app<!-- [![Build Status][travis-image]][travis-url] -->
+# generator-threejs-modern-app [![Build Status][travis-image]][travis-url]
 > Scaffold out a boilerplate and utils for a fullscreen Three.js app
 
 ## [READ THE DOCUMENTATION HERE](https://github.com/marcofugaro/threejs-modern-app)
@@ -24,4 +24,4 @@ yo
 and select `Threejs Modern App`.
 
 [travis-image]: https://travis-ci.org/marcofugaro/generator-threejs-modern-app.svg?branch=master
-[travis-url]: https://travis-ci.org/marcofugaro/generator-threejs-modern-app
+[travis-url]: https://travis-ci.org/marcofugaro/generator-treejs-modern-app
