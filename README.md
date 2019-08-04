@@ -23,10 +23,5 @@ yo
 ```
 and select `Threejs Modern App`.
 
-## License
-
-MIT © [Marco Fugaro](marcofugaro.it)
-
-
 [travis-image]: https://travis-ci.org/marcofugaro/generator-threejs-modern-app.svg?branch=master
 [travis-url]: https://travis-ci.org/marcofugaro/generator-threejs-modern-app
