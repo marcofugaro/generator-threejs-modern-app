@@ -8,7 +8,8 @@ let generator
 
 test.beforeEach(async () => {
 	await pify(helpers.testDirectory)(path.join(__dirname, 'tmp'))
-	generator = helpers.createGenerator('threejs-modern-app', ['../app'], null, { skipInstall: true })
+	generator = helpers.createGenerator('threejs-modern-app:app', ['../app'], null, { skipInstall: true })
+  generator.run = pify(generator.run.bind(generator))
 })
 
 test.serial('generates expected files', async () => {
@@ -16,7 +17,6 @@ test.serial('generates expected files', async () => {
 		title: 'test',
 	})
 
-  generator.run = pify(generator.run.bind(generator))
 	await generator.run()
 
 	assert.file([
@@ -46,8 +46,6 @@ test.serial('uses the prompted description', async () => {
 		description: 'foo',
 	})
 
-
-  generator.run = pify(generator.run.bind(generator))
 	await generator.run()
 
   assert.jsonFileContent('package.json', { description: 'foo' })
@@ -59,8 +57,6 @@ test.serial('defaults to superb description', async () => {
 		title: 'test',
 	})
 
-
-  generator.run = pify(generator.run.bind(generator))
 	await generator.run()
 
 	assert.fileContent('package.json', /"description": "My .+ app",/)
@@ -73,8 +69,6 @@ test.serial('yarn option works', async () => {
     yarn: true,
   })
 
-
-  generator.run = pify(generator.run.bind(generator))
 	await generator.run()
 
 	assert.file([
@@ -88,8 +82,6 @@ test.serial('keepExample option works', async () => {
     keepExample: true,
   })
 
-
-  generator.run = pify(generator.run.bind(generator))
 	await generator.run()
 
 	assert.file([
