@@ -27,7 +27,7 @@ module.exports = class extends Generator {
 			name: 'website',
 			message: 'What is the URL of your website?',
 			store: true,
-			filter: prompt => prompt ? humanizeUrl(normalizeUrl(prompt)) : null,
+			filter: prompt => prompt ? normalizeUrl(prompt) : null,
 		}, {
 			name: 'yarn',
       type: 'confirm',
