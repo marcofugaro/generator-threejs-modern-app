@@ -35,7 +35,6 @@ test.serial('generates expected files', async () => {
 		'LICENSE',
 		'package.json',
 		'README.md',
-		'update-local-three.js',
 		'webpack.config.js',
 	])
 })
