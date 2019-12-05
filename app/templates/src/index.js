@@ -67,9 +67,9 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // add any "WebGL components" here...
   // append them to the scene so you can
   // use them from other components easily<% if (keepExample) { %>
-  webgl.scene.suzanne = new Suzanne({ webgl })
+  webgl.scene.suzanne = new Suzanne(webgl)
   webgl.scene.add(webgl.scene.suzanne)<% } else { %>
-  webgl.scene.box = new Box({ webgl })
+  webgl.scene.box = new Box(webgl)
   webgl.scene.add(webgl.scene.box)<% } %>
 <% if (keepExample) { %>
   // lights and other scene related stuff
