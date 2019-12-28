@@ -1,9 +1,9 @@
-import * as THREE from 'three'
+<% if (keepExample) { %>import * as THREE from 'three'
 import State from 'controls-state'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'<% } %>
 import WebGLApp from './lib/WebGLApp'
 import assets from './lib/AssetManager'<% if (keepExample) { %>
 import Suzanne, { addNaturalLight, addScreenshotButton } from './scene/Suzanne'
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
 import passVert from './scene/shaders/pass.vert'
 import vignetteFrag from './scene/shaders/vignette.frag'<% } else { %>
 import Box from './scene/Box'<% } %>
