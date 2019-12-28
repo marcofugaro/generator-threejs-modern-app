@@ -1,6 +1,6 @@
 {
   "name": "generator-threejs-modern-app",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Scaffold out a boilerplate and utils for a fullscreen Three.js app",
   "license": "MIT",
   "repository": "marcofugaro/generator-threejs-modern-app",
