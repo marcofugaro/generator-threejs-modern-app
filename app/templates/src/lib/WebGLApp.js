@@ -11,12 +11,15 @@ import wrapGUI from 'controls-gui'
 import { getGPUTier } from 'detect-gpu'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import CannonDebugRenderer from './CannonDebugRenderer'
 
 export default class WebGLApp {
   #updateListeners = []
   #tmpTarget = new THREE.Vector3()
   #rafID
   #lastTime
+  #width
+  #height
 
   constructor({
     background = '#000',
@@ -40,6 +43,10 @@ export default class WebGLApp {
     this.canvas = this.renderer.domElement
 
     this.renderer.setClearColor(background, backgroundAlpha)
+
+    // save the fixed dimensions
+    this.#width = options.width
+    this.#height = options.height
 
     // clamp pixel ratio for performance
     this.maxPixelRatio = options.maxPixelRatio || 2
@@ -72,9 +79,16 @@ export default class WebGLApp {
       target: this.canvas,
       filtered: true,
     })
-    this.touchHandler.on('start', (ev, pos) => this.traverse('onPointerDown', ev, pos))
+    this.isDragging = false
+    this.touchHandler.on('start', (ev, pos) => {
+      this.isDragging = true
+      this.traverse('onPointerDown', ev, pos)
+    })
     this.touchHandler.on('move', (ev, pos) => this.traverse('onPointerMove', ev, pos))
-    this.touchHandler.on('end', (ev, pos) => this.traverse('onPointerUp', ev, pos))
+    this.touchHandler.on('end', (ev, pos) => {
+      this.isDragging = false
+      this.traverse('onPointerUp', ev, pos)
+    })
 
     // expose a composer for postprocessing passes
     if (options.postprocessing) {
@@ -97,10 +111,12 @@ export default class WebGLApp {
     }
 
     // Attach the Cannon physics engine
-    if (options.world) this.world = options.world
-
-    // Attach Tween.js
-    if (options.tween) this.tween = options.tween
+    if (options.world) {
+      this.world = options.world
+      if (options.showWorldWireframes) {
+        this.cannonDebugRenderer = new CannonDebugRenderer(this.scene, this.world)
+      }
+    }
 
     // show the fps meter
     if (options.showFps) {
@@ -112,14 +128,24 @@ export default class WebGLApp {
     // initialize the controls-state
     if (options.controls) {
       const controlsState = State(options.controls)
-      this.controls = options.hideControls ? controlsState : wrapGUI(controlsState)
-      if (options.closeControls) {
-        const controlsElement = document.querySelector('[class*="controlPanel"]')
+      this.controls = options.hideControls
+        ? controlsState
+        : wrapGUI(controlsState, { expanded: !options.closeControls })
 
-        controlsElement.style.display = 'none'
-        const controlsButton = document.querySelector('[class*="controlPanel"] button')
-        controlsButton.click()
-        controlsElement.style.display = 'block'
+      // add the custom controls-gui styles
+      if (!options.hideControls) {
+        const styles = `
+          [class^="controlPanel-"] [class*="__field"]::before {
+            content: initial !important;
+          }
+          [class^="controlPanel-"] [class*="__field--button"] > button::before {
+            content: initial !important;
+          }
+        `
+        const style = document.createElement('style')
+        style.type = 'text/css'
+        style.innerHTML = styles
+        document.head.appendChild(style)
       }
     }
 
@@ -132,15 +158,19 @@ export default class WebGLApp {
     }
   }
 
-  resize = ({
-    width = window.innerWidth,
-    height = window.innerHeight,
-    pixelRatio = Math.min(this.maxPixelRatio, window.devicePixelRatio),
-  } = {}) => {
-    this.width = width
-    this.height = height
-    this.pixelRatio = pixelRatio
+  get width() {
+    return this.#width || window.innerWidth
+  }
 
+  get height() {
+    return this.#height || window.innerHeight
+  }
+
+  get pixelRatio() {
+    return Math.min(this.maxPixelRatio, window.devicePixelRatio)
+  }
+
+  resize = ({ width = this.width, height = this.height, pixelRatio = this.pixelRatio } = {}) => {
     // update pixel ratio if necessary
     if (this.renderer.getPixelRatio() !== pixelRatio) {
       this.renderer.setPixelRatio(pixelRatio)
@@ -212,17 +242,17 @@ export default class WebGLApp {
       // update the Cannon physics engine
       this.world.step(dt)
 
+      // update the debug wireframe renderer
+      if (this.cannonDebugRenderer) {
+        this.cannonDebugRenderer.update()
+      }
+
       // recursively tell all child bodies to update
       this.world.bodies.forEach(body => {
         if (typeof body.update === 'function') {
           body.update(dt, time)
         }
       })
-    }
-
-    if (this.tween) {
-      // update the Tween.js engine
-      this.tween.update()
     }
 
     // call the update listeners
@@ -292,6 +322,18 @@ export default class WebGLApp {
         child[fn].apply(child, args)
       }
     })
+  }
+
+  get cursor() {
+    return this.canvas.style.cursor
+  }
+
+  set cursor(cursor) {
+    if (cursor) {
+      this.canvas.style.cursor = cursor
+    } else {
+      this.canvas.style.cursor = null
+    }
   }
 }
 
