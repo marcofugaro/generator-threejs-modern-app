@@ -16,7 +16,6 @@ import CannonDebugRenderer from './CannonDebugRenderer'
 export default class WebGLApp {
   #updateListeners = []
   #tmpTarget = new THREE.Vector3()
-  #rafID
   #lastTime
   #width
   #height
@@ -44,6 +43,10 @@ export default class WebGLApp {
 
     this.renderer.setClearColor(background, backgroundAlpha)
 
+    if (options.xr) {
+      this.renderer.xr.enabled = true
+    }
+
     // save the fixed dimensions
     this.#width = options.width
     this.#height = options.height
@@ -63,7 +66,6 @@ export default class WebGLApp {
     this.time = 0
     this.isRunning = false
     this.#lastTime = performance.now()
-    this.#rafID = null
 
     // handle resize events
     window.addEventListener('resize', this.resize)
@@ -138,6 +140,9 @@ export default class WebGLApp {
           [class^="controlPanel-"] [class*="__field"]::before {
             content: initial !important;
           }
+          [class^="controlPanel-"] [class*="__labelText"] {
+            text-indent: 6px !important;
+          }
           [class^="controlPanel-"] [class*="__field--button"] > button::before {
             content: initial !important;
           }
@@ -189,7 +194,7 @@ export default class WebGLApp {
     }
 
     // recursively tell all child objects to resize
-    this.scene.traverse(obj => {
+    this.scene.traverse((obj) => {
       if (typeof obj.resize === 'function') {
         obj.resize({
           width,
@@ -220,7 +225,7 @@ export default class WebGLApp {
     saveDataURI(fileName, dataURI)
   }
 
-  update = (dt, time) => {
+  update = (dt, time, xrframe) => {
     if (this.orbitControls) {
       this.orbitControls.update()
 
@@ -232,15 +237,15 @@ export default class WebGLApp {
     }
 
     // recursively tell all child objects to update
-    this.scene.traverse(obj => {
+    this.scene.traverse((obj) => {
       if (typeof obj.update === 'function') {
-        obj.update(dt, time)
+        obj.update(dt, time, xrframe)
       }
     })
 
     if (this.world) {
       // update the Cannon physics engine
-      this.world.step(dt)
+      this.world.step(1 / 60, dt)
 
       // update the debug wireframe renderer
       if (this.cannonDebugRenderer) {
@@ -248,7 +253,7 @@ export default class WebGLApp {
       }
 
       // recursively tell all child bodies to update
-      this.world.bodies.forEach(body => {
+      this.world.bodies.forEach((body) => {
         if (typeof body.update === 'function') {
           body.update(dt, time)
         }
@@ -256,13 +261,24 @@ export default class WebGLApp {
     }
 
     // call the update listeners
-    this.#updateListeners.forEach(fn => fn(dt, time))
+    this.#updateListeners.forEach((fn) => fn(dt, time, xrframe))
 
     return this
   }
 
   onUpdate(fn) {
     this.#updateListeners.push(fn)
+  }
+
+  offUpdate(fn) {
+    const index = this.#updateListeners.indexOf(fn)
+
+    // return silently if the function can't be found
+    if (index === -1) {
+      return
+    }
+
+    this.#updateListeners.splice(index, 1)
   }
 
   draw = () => {
@@ -286,38 +302,35 @@ export default class WebGLApp {
   }
 
   start = () => {
-    if (this.#rafID !== null) return
-    this.#rafID = window.requestAnimationFrame(this.animate)
+    if (this.isRunning) return
+    this.renderer.setAnimationLoop(this.animate)
     this.isRunning = true
     return this
   }
 
   stop = () => {
-    if (this.#rafID === null) return
-    window.cancelAnimationFrame(this.#rafID)
-    this.#rafID = null
+    if (!this.isRunning) return
+    this.renderer.setAnimationLoop(null)
     this.isRunning = false
     return this
   }
 
-  animate = () => {
+  animate = (now, xrframe) => {
     if (!this.isRunning) return
-    window.requestAnimationFrame(this.animate)
 
     if (this.stats) this.stats.begin()
 
-    const now = performance.now()
     const dt = Math.min(this.maxDeltaTime, (now - this.#lastTime) / 1000)
     this.time += dt
     this.#lastTime = now
-    this.update(dt, this.time)
+    this.update(dt, this.time, xrframe)
     this.draw()
 
     if (this.stats) this.stats.end()
   }
 
   traverse = (fn, ...args) => {
-    this.scene.traverse(child => {
+    this.scene.traverse((child) => {
       if (typeof child[fn] === 'function') {
         child[fn].apply(child, args)
       }
