@@ -1,3 +1,5 @@
+# DEPRECATED, generate project from the [threejs-modern-app](https://github.com/marcofugaro/threejs-modern-app) repo
+
 # generator-threejs-modern-app [![Build Status][travis-image]][travis-url]
 > Scaffold out a boilerplate and utils for a fullscreen Three.js app
 
